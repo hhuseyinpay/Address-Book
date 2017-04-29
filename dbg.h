@@ -26,6 +26,4 @@
                                  __FILENAME__, __LINE__, clean_errno(), ##__VA_ARGS__); exit(EXIT_FAILURE);}
 #define log_info(M, ...) fprintf(stderr, "[INFO] (%s:%d) " M "\n", __FILE__, __LINE__, ##__VA_ARGS__)
 
-#define USAGE "Usage: ./mm [-t <template>] [-v <variables>] [-o <outputs>]\n"
-
 #define err_msg(msg, ...) {fprintf(stderr, "[ERROR] " msg "\n",##__VA_ARGS__); exit(EXIT_FAILURE);}
