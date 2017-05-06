@@ -3,10 +3,12 @@
 //
 
 #include "dbg.h"
+#include "records.h"
 
+#define DATAFILE  da.ta
+#define INDEXFILE in.dex
 
-#define MENU "Main Menu\n=====================\n1.\tAdd New Record\n2.\tUpdate A Record\n\
-3.\tDelete A record\n4.\tFind A Record\n5.\tList Records\n6.\tExit\n\nEnter your choice ==> "
+void print_menu(int *answer);
 
 int main()
 {
@@ -14,8 +16,7 @@ int main()
 
     int choice;
     while (1) {
-        printf(MENU);
-        fscanf(stdin, "%d", &choice);
+        print_menu(&choice);
 
         switch (choice) {
             case 1:
@@ -35,4 +36,20 @@ int main()
                 log_info("Wrong parameter");
         }
     }
+}
+
+void print_menu(int *answer)
+{
+
+    //print the user menu
+    printf("1.\tAdd New Record \n");
+    printf("2.\tUpdate A Record \n");
+    printf("3.\tDelete A record \n");
+    printf("4.\tFind A Record \n");
+    printf("5.\tList Records \n");
+    printf("-------------------------------------\n");
+    printf("(5) Exit \n");
+    printf("Enter your choice ==> ");
+    scanf("%d", answer);
+    printf("\n");
 }

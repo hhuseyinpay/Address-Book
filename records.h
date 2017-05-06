@@ -17,3 +17,7 @@ struct record {
     char notes[NTSZ];
     char address[ADRSSZ];
 };
+
+void rread(const char *filename, struct record *rcrd, int index);
+
+void rwrite(const char *filename, struct record *rcrd);
