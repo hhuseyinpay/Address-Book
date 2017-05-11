@@ -3,15 +3,14 @@
 //
 
 #include "dbg.h"
-#include "records.h"
+#include "address_book.h"
 
-#define DATAFILE  da.ta
-#define INDEXFILE in.dex
 
 void print_menu(int *answer);
 
 int main()
 {
+    addressbook_init();
     printf("\nMy Address Book Application\n\n");
 
     int choice;
@@ -20,8 +19,19 @@ int main()
 
         switch (choice) {
             case 1:
+
+                if(new_record())
+                    printf("\n**Duplicate record**\n");
+                else
+                    printf("\nRecord has been added\n\n");
                 break;
             case 2:
+
+                if(update_record()) {
+
+                }
+
+
                 break;
             case 3:
                 break;
@@ -48,7 +58,7 @@ void print_menu(int *answer)
     printf("4.\tFind A Record \n");
     printf("5.\tList Records \n");
     printf("-------------------------------------\n");
-    printf("(5) Exit \n");
+    printf("6. Exit \n");
     printf("Enter your choice ==> ");
     scanf("%d", answer);
     printf("\n");
