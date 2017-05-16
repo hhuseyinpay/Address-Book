@@ -2,33 +2,36 @@
 // Created by hhp on 29/04/2017.
 //
 
-#include <stdio.h>
-#include <stdlib.h>
+
+
 #include "dbg.h"
 #include "address_book.h"
-
-
-int data_read(FILE *f, struct data_record *dr, int index)
-{
-    fseek(f, index * sizeof(struct data_record), SEEK_SET);
-    return (int) fread(dr, sizeof(struct data_record), 1, f);
-}
 
 long data_write(struct data_record *dr)
 {
     FILE *f = fopen(DATA_FILE_NAME, "ab");
-    fwrite(dr, sizeof(struct data_record), 1, f);
+    long i = ftell(f);
+    fwrite(dr, dr_size, 1, f);
     fclose(f);
-    return ftell(f);
+    return i;
 }
 
 
 int insert_index(struct index_record *newrc)
 {
-    if (index_root == NULL)
+    if (index_root == NULL) {
         index_root = newrc;
+        return 0;
+    }
 
     struct index_record *current = index_root;
+
+    if (strcmp(current->id, newrc->id) > 0) {
+        newrc->next = current;
+        index_root = newrc;
+        return 0;
+    }
+
     while (current->next != NULL && strcmp(current->next->id, newrc->id) < 0) {
         current = current->next;
     }
@@ -38,52 +41,49 @@ int insert_index(struct index_record *newrc)
     return 0;
 }
 
-int index_read(struct index_record *root)
+int index_read()
 {
-    debug("index_read()");
-    size_t size = sizeof(struct index_record);
     char cntrl = 1;
 
     FILE *f = fopen(INDEX_FILE_NAME, "rb+");
-    if (f != NULL) {
-        fread(&cntrl, sizeof(char), 1, f);
+    if (f == NULL) // if no such a file, there is a error
+        return 1;
 
-        if (cntrl != '0') {
-            debug("dirty flag is not 0");
-            fclose(f);
-            debug("end of index_read()");
-            return 1;
-        }
-    } else {
-        return 0;
-    }
+    fread(&cntrl, sizeof(char), 1, f);
     fseek(f, 0, SEEK_SET);
-    fwrite("0", 1, 1, f); // dirty bit
-    struct index_record *tmp = calloc(1, size);
+    fwrite("1", 1, 1, f); //dirty bit
 
-    while (fread(tmp, size, 1, f) == 1) {
-
-        tmp = calloc(1, size);
-        insert_index(tmp);
-        memset(tmp, 0, size);
-        printf("a: %s\n", tmp->id);
+    if (cntrl != '0') {
+        debug("dirty bit is not zero");
+        fclose(f);
+        return 1;
     }
+
+
+
+
+    struct index_record *tmp = calloc(1, ir_size);
+
+    while (fread(tmp, ir_size, 1, f) == 1) {
+        tmp->next = NULL;
+        insert_index(tmp);
+        tmp = calloc(1, ir_size);
+    }
+
+    fclose(f);
     free(tmp);
     debug("end of index_read()");
     return 0;
 }
 
-void index_write(struct index_record **root)
+void index_write()
 {
-    errno = 0;
-    size_t size = sizeof(struct index_record);
-
     FILE *f = fopen(INDEX_FILE_NAME, "wb");
     fwrite("0", 1, 1, f); //dirty bit
 
-    struct index_record *tmp = *root;
+    struct index_record *tmp = index_root;
     while (tmp != NULL) {
-        fwrite(tmp, size, 1, f);
+        fwrite(tmp, ir_size, 1, f);
         tmp = tmp->next;
     }
     fclose(f);
@@ -109,10 +109,12 @@ int remove_index(struct index_record *ir)
             struct index_record *tmp = index_root;
             index_root = index_root->next;
             free(tmp);
+        } else {
+            // rootun nexti yoksa, root NULL olur
+            free(index_root);
+            index_root = NULL;
         }
-        // rootun nexti yoksa, root NULL olur
-        free(index_root);
-        index_root = NULL;
+        return 0;
     }
 
     struct index_record *current = index_root;
@@ -121,11 +123,12 @@ int remove_index(struct index_record *ir)
     }
 
     if (current->next == NULL)
-        return 0; // index record yoktur.
+        return 1; // index_record yoktur.
 
     // currentın nexti silinecektir. tmp, free yapabilmek amacıyla tutuldu.
     struct index_record *tmp = current->next;
     current->next = current->next->next;
     free(tmp);
+
     return 0;
 }

@@ -12,8 +12,8 @@
 #define ADRSSIZE 100
 
 
-#define INDEX_FILE_NAME "index.bin"
-#define DATA_FILE_NAME "data.bin"
+#define INDEX_FILE_NAME "index.dat"
+#define DATA_FILE_NAME "data.dat"
 
 
 struct data_record {
@@ -30,16 +30,16 @@ struct index_record {
 };
 
 extern struct index_record *index_root;
-
-int data_read(FILE *f, struct data_record *dr, int index);
+extern size_t ir_size;
+extern size_t dr_size;
 
 long data_write(struct data_record *dr);
 
 int insert_index(struct index_record *newrc);
 
-int index_read(struct index_record *root);
+int index_read();
 
-void index_write(struct index_record **root);
+void index_write();
 
 struct index_record *search_index(char *id);
 

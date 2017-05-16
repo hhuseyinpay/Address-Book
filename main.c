@@ -10,6 +10,7 @@ void print_menu(int *answer);
 
 int main()
 {
+    setbuf(stdout, NULL);
     addressbook_init();
     printf("\nMy Address Book Application\n\n");
 
@@ -20,31 +21,49 @@ int main()
         switch (choice) {
             case 1:
 
-                if(new_record())
+                if (new_record())
                     printf("\n**Duplicate record**\n");
                 else
                     printf("\nRecord has been added\n\n");
                 break;
             case 2:
 
-                if(update_record()) {
-
-                }
-
+                list_id();
+                if (update_record())
+                    printf("\n**Record did not found or record exist**\n");
+                 else
+                    printf("\nRecord has been updated\n");
 
                 break;
             case 3:
+
+                list_id();
+                if (remove_record())
+                    printf("\n**Record did not found**\n");
+                else
+                    printf("\nRecord has been deleted\n");
+
                 break;
             case 4:
+
+                list_id();
+                if (find_record())
+                    printf("\n**Record did not found**\n");
+
                 break;
             case 5:
+                if (list_record())
+                    printf("\n**Records did not found**\n");
                 break;
             case 6:
-                // exit
+               addressbook_exit();
                 return 0;
             default:
-                log_info("Wrong parameter");
+                printf("Wrong parameter\n");
         }
+        printf("\n\n\n");
+        fflush(stdout);
+        fflush(stdin);
     }
 }
 

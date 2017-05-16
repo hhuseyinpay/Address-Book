@@ -15,3 +15,13 @@ int addressbook_init();
 int new_record();
 
 int update_record();
+
+void list_id();
+
+int remove_record();
+
+int find_record();
+
+int list_record();
+
+void addressbook_exit();
